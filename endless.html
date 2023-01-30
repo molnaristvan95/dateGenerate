@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="Generate the date forward">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Molnár István || Мельник Степан">
+  <meta name="keywords" content="date, generate, js, future">
+  <meta name="theme-color" content="#050">
+  <title>Dátum generátor</title>
+  <style id="css" rel="stylesheet" type="text/css">
+    /* Base style */
+    *:root {
+      font-size: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .flc {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Targeted style */
+    article {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      zoom: 1.3;
+      margin: 4px auto;
+    }
+
+    article>*:nth-child(even) {
+      background: #ddd;
+    }
+
+    details {
+      zoom: 1.5;
+    }
+
+    input,
+    label {
+      width: 40%;
+      display: inline-block;
+      text-align: center;
+    }
+
+    button {
+      display: block;
+      zoom: 1.5;
+      width: 45%;
+      margin: 1vh auto;
+    }
+
+    marquee {
+      width: 80%;
+      margin: 8px 8px;
+    }
+
+    table {
+      margin: 2vh auto;
+    }
+
+    tr {
+      borde: 1pt solid black;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    tr,
+    td {
+      font-famil: Calibri;
+    }
+
+    details,
+    article,
+    input {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+
+    /* Media query */
+    @media print {
+      body#main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      details {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body id="main">
+  <article id="mon"></article>
+  <details open>
+    <summary>Kezelőpanel</summary>
+    <label>Évszám?</label>
+    <input id="year" type="text" value="1995">
+    <label>Melyik hónap?</label>
+    <input id="mounth" type="text" value="Algusztusz">
+    <marquee behavior="scroll" direction="left" scrollamount="6">
+      A mezők kitöltésekor kérlek gépelj PONTOSAN! Ha jól írtad be a hónapot, be fog zöldülni a jobb oldali listában. Ott láthatod a pontos formátumot. Ezután jelöld ki és másold, majd illeszd be az excelbe. Utána formázd kedvedre az excelben a cellák tartalmát.
+    </marquee>
+    <button id="gen" type="button">Létrehoz!</button>
+  </details>
+  <table border="0" cellpadding="0" cellspacing="0" width="73" style="border-collapse:
+ collapse;width:55pt">
+    <colgroup>
+      <col width="73" style="mso-width-source:userset;mso-width-alt:2669;width:55pt">
+    </colgroup>
+    <tbody id="tableBody">
+    </tbody>
+  </table>
+
+  <script type="text/javascript">
+    // constant data and functions
+    //new Date(2023, 4, 0).getDate()
+    //new Date(2023, 4, 7).getDay()
+    const genF = (e) => {
+        return document.createElement(e);
+      },
+      idF = (i) => {
+        return document.getElementById(i);
+      },
+      mounthsArr = ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'],
+      daysArr = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
+
+    let showDataBase = () => {
+      for (let y = 0; y < mounthsArr.length; y++) {
+        let div = genF('DIV');
+        div.innerText = mounthsArr[y];
+        idF('mon').appendChild(div);
+      }
+    }
+
+    let genAllF = () => {
+      idF('tableBody').innerHTML = '';
+      let actMonthNum,
+        actualYear = idF('year').value,
+        actualMonth = idF('mounth').value;
+      for (let a = 0; a < mounthsArr.length; a++) {
+        if (mounthsArr[a] == actualMonth) {
+          //actMonthNum == 1 ? actMonthNum = 0 : actMonthNum = a;
+          actMonthNum = a;
+          idF('mon').children[a].style.background = 'green';
+          console.log('a = ' + a);
+          console.log('the mont ' + mounthsArr[a]);
+          console.log('act mont inside ' + actMonthNum);
+        }
+      }
+      //actMonthNum = idF('mounth').value;
+      let max = new Date(actualYear, actMonthNum + 1, 0).getDate();
+      //idF('tableBody').innerHTML += '<div>' + actualMonth + ' * ' + max + '</div>';
+      for (let b = 0; b < max; b++) {
+        let str = '<tr height="20" style="height:15.0pt"><td height="20" class="xl64" style="height:15.0pt;border-top:none">' /*+ b + ' - '*/ + daysArr[new Date(actualYear, actMonthNum, b).getDay()] + '</td></tr>';
+        idF('tableBody').innerHTML += str;
+        idF('css').innerHTML += 'tr:nth-of-type(' + (b + 1) + ')::before{content:"' + (b + 1) + ' "}';
+      }
+      let win = window.open('', '_blank'),
+        titlee = idF('year').value + ' ' + idF('mounth').value + ' (' + max + ')';
+      win.document.body.innerHTML = document.getElementsByTagName('TABLE')[0].outerHTML;
+      win.document.title = titlee;
+      win.document.body.style.background = '#997';
+      win.alert('Ctrl + A\nCtrl + C\nCtrl + V');
+      console.log('actual mont ' + actMonthNum);
+      console.log('max ' + max);
+      console.log('start day in mount ' + new Date(actualYear, actMonthNum, 0).getDay() + ' ' + daysArr[new Date(actualYear, actMonthNum, 0).getDay()]);
+      //      window.setTimeout( () => {
+      //      location.reload();
+      //      }, 32000);
+      //idF('tableBody').innerHTML += '<div>------</div>';
+    }
+
+    let testing = () => {
+      for (let l = 0; l < mounthsArr.length; l++) {
+        idF('mounth').value = mounthsArr[l];
+        genAllF();
+      }
+    }
+    //testing();
+
+    let settings = () => {
+      let date = new Date(),
+        rik = date.getFullYear(),
+        misac = date.getMonth();
+      idF('year').value = rik;
+      idF('mounth').value = mounthsArr[misac];
+    }
+
+    window.setTimeout(settings, 512);
+    showDataBase();
+    idF('gen').addEventListener('click', genAllF);
+  </script>
+</body>
+
+</html>
